@@ -20,7 +20,7 @@ function render($url, $source, $destination, $original_source=NULL)
 	}
 
 	echo "Rendering $url\n";
-	`php ../wiki/render.php $source > $destination`;
+	`php ../wiki-engine/render.php $source > $destination`;
 }
 
 $start = microtime(TRUE);
