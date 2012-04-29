@@ -1,5 +1,5 @@
 <?php
-$source = '../flourish-classes/';
+$source = '../classes/';
 $files = array_diff(scandir($source), array('.', '..', 'flourish.rev'));
 
 $max_message_length = 0;
@@ -57,11 +57,11 @@ foreach ($messages as $message => $locations) {
 $messages_php   = substr($messages_php, 0, -1) . "\n);";
 $messages_html .= "</table>\n";
 
-$hash = `git --work-tree=../flourish-classes --git-dir=../flourish-classes/.git rev-parse HEAD`;
+$hash = `git --work-tree=../classes --git-dir=../classes/.git rev-parse HEAD`;
 $hash = substr($hash, 0, 8);
 file_put_contents('../flourishlib.com/messages/' . $hash . '.phps', $messages_php);
 
-$tag = `git --work-tree=../flourish-classes --git-dir=../flourish-classes/.git tag`;
+$tag = `git --work-tree=../classes --git-dir=../classes/.git tag`;
 $tag = trim($tag);
 if ($tag) {
 	file_put_contents('../flourishlib.com/messages/' . $tag . '.phps', $messages_php);

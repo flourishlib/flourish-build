@@ -3,7 +3,7 @@ $source     = '../flourishlib.com/';
 $api_docs_dir  = $source . 'api/';
 $wiki_docs_dir = $source . 'docs/';
 
-$tag = `git --work-tree=../flourish-classes --git-dir=../flourish-classes/.git tag`;
+$tag = `git --work-tree=../classes --git-dir=../classes/.git tag`;
 $tag = trim($tag);
 
 if (!$tag) {

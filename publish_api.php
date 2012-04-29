@@ -7,7 +7,7 @@ if (file_exists($tmp_dir)) {
 }
 mkdir($tmp_dir);
 
-passthru("php ../flourish-phpdoc/generate.php $tmp_dir");
+passthru("php ../phpdoc/generate.php $tmp_dir");
 
 $files = array_diff(scandir($tmp_dir), array('.', '..'));
 foreach ($files as $file) {
@@ -19,11 +19,11 @@ foreach ($files as $file) {
 
 	$title = $class . ' – API Reference – Flourish';
 
-	$header = file_get_contents('../flourish-site/partials/header.html');
+	$header = file_get_contents('../site/partials/header.html');
 	$header = str_replace('{{ title }}', $title, $header);
 	$header .= '<script src="/js/api.js"></script>';
 
-	$footer = file_get_contents('../flourish-site/partials/footer.html');
+	$footer = file_get_contents('../site/partials/footer.html');
 
 	file_put_contents('../flourishlib.com/api/' . $file, $header . $content . $footer);
 }
