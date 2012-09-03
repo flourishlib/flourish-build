@@ -41,6 +41,8 @@ $tests_branch = trim(str_replace('refs/heads/', '', $tests_branch));
 $json = file_get_contents('../tests-results/todo.json');
 $todo = json_decode($json, TRUE);
 
+$_ = `git --work-tree=../tests-results --git-dir=../tests-results/.git pull --rebase origin master`;
+
 chdir('../tests');
 
 $hashes_to_remove = array();
@@ -86,6 +88,8 @@ foreach ($todo as $classes_hash => $tests_hash) {
         $json = pretty_json_encode($index);
         file_put_contents('../tests-results/index.json', $json);
     }
+
+    $_ = `git --work-tree=../tests-results --git-dir=../tests-results/.git commit -a -m "Added results for $classes_hash"`;
 }
 
 // Remove the processed hashes
@@ -96,6 +100,8 @@ foreach ($hashes_to_remove as $hash) {
 }
 $json = pretty_json_encode($todo);
 file_put_contents('../tests-results/todo.json', $json);
+
+$_ = `git --work-tree=../tests-results --git-dir=../tests-results/.git push origin master`;
 
 chdir('../build');
 
