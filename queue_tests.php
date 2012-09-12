@@ -28,6 +28,6 @@ $json = str_replace(',', ",\n\t", $json);
 $json = str_replace('}', "\n}", $json);
 file_put_contents('../tests-results/todo.json', $json);
 
-$_ = `git --work-tree=../tests-results --git-dir=../tests-results/.git pull --rebase origin master`;
-$_ = `git --work-tree=../tests-results --git-dir=../tests-results/.git commit -a -m "Queued run for $classes_hash"`;
-$_ = `git --work-tree=../tests-results --git-dir=../tests-results/.git push origin master`;
+`git --work-tree=../tests-results --git-dir=../tests-results/.git pull -q origin master`;
+`git --work-tree=../tests-results --git-dir=../tests-results/.git commit -q -a -m "Queued run for $classes_hash"`;
+`git --work-tree=../tests-results --git-dir=../tests-results/.git push -q origin master`;

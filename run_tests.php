@@ -1,4 +1,14 @@
 <?php
+$pid_file = dirname(__FILE__) . '/run_tests.pid';
+
+if (file_exists($pid_file)) {
+    exit;
+}
+
+chdir(dirname(__FILE__));
+
+touch($pid_file);
+
 $hosts = array(
     'will@vm-centos.wbond.net',
     'will@vm-debian.wbond.net',
@@ -41,7 +51,7 @@ $tests_branch = trim(str_replace('refs/heads/', '', $tests_branch));
 $json = file_get_contents('../tests-results/todo.json');
 $todo = json_decode($json, TRUE);
 
-$_ = `git --work-tree=../tests-results --git-dir=../tests-results/.git pull --rebase origin master`;
+`git --work-tree=../tests-results --git-dir=../tests-results/.git pull -q origin master`;
 
 chdir('../tests');
 
@@ -89,22 +99,24 @@ foreach ($todo as $classes_hash => $tests_hash) {
         file_put_contents('../tests-results/index.json', $json);
     }
 
-    $_ = `git --work-tree=../tests-results --git-dir=../tests-results/.git commit -a -m "Added results for $classes_hash"`;
+    // Remove the processed hashes
+    $json = file_get_contents('../tests-results/todo.json');
+    $todo = json_decode($json, TRUE);
+    foreach ($hashes_to_remove as $hash) {
+        unset($todo[$hash]);
+    }
+    $json = pretty_json_encode((object) $todo);
+    file_put_contents('../tests-results/todo.json', $json);
+
+    `git --work-tree=../tests-results --git-dir=../tests-results/.git commit -q -a -m "Added results for $classes_hash"`;
 }
 
-// Remove the processed hashes
-$json = file_get_contents('../tests-results/todo.json');
-$todo = json_decode($json, TRUE);
-foreach ($hashes_to_remove as $hash) {
-    unset($todo[$hash]);
-}
-$json = pretty_json_encode($todo);
-file_put_contents('../tests-results/todo.json', $json);
-
-$_ = `git --work-tree=../tests-results --git-dir=../tests-results/.git push origin master`;
+`git --work-tree=../tests-results --git-dir=../tests-results/.git push -q origin master`;
 
 chdir('../build');
 
 // Return to the original location
-$_ = `git --work-tree=../classes --git-dir=../classes/.git checkout -q $classes_branch`;
-$_ = `git --work-tree=../tests --git-dir=../tests/.git checkout -q $tests_branch`;
+`git --work-tree=../classes --git-dir=../classes/.git checkout -q $classes_branch`;
+`git --work-tree=../tests --git-dir=../tests/.git checkout -q $tests_branch`;
+
+unlink($pid_file);
