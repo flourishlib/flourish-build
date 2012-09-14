@@ -31,6 +31,7 @@ render("/Download", "$source/$source/Download.wiki", "$destination/Download.html
 render("/AdvancedDownload", "$source/$source/AdvancedDownload.wiki", "$destination/AdvancedDownload.html");
 render("/Support", "$source/$source/Support.wiki", "$destination/Support.html");
 render("/Tests", "$source/$source/Tests.wiki", "$destination/Tests.html");
+render("/NotFound", "$source/$source/NotFound.wiki", "$destination/NotFound.html");
 
 $blogs = array_diff(scandir('../site/blog'), array('.', '..'));
 foreach ($blogs as $blog) {
