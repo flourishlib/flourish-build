@@ -40,18 +40,21 @@ function exec_out($command) {
 }
 
 // Save the current branches so we can return there afterwards
-$classes_branch = `git --work-tree=../classes --git-dir=../classes/.git symbolic-ref -q HEAD`;
+chdir('../classes');
+$classes_branch = `git symbolic-ref -q HEAD`;
 $classes_branch = trim(str_replace('refs/heads/', '', $classes_branch));
-`git --work-tree=../classes --git-dir=../classes/.git fetch --all`;
+`git fetch --all`;
 
-$tests_branch = `git --work-tree=../tests --git-dir=../tests/.git symbolic-ref -q HEAD`;
+chdir('../tests');
+$tests_branch = `git symbolic-ref -q HEAD`;
 $tests_branch = trim(str_replace('refs/heads/', '', $tests_branch));
-`git --work-tree=../tests --git-dir=../tests/.git fetch --all`;
+`git fetch --all`;
 
 $json = file_get_contents('../tests-results/todo.json');
 $todo = json_decode($json, TRUE);
 
-`git --work-tree=../tests-results --git-dir=../tests-results/.git pull -q origin master`;
+chdir('../tests-results');
+`git pull -q origin master`;
 
 chdir('../tests');
 
@@ -67,12 +70,14 @@ foreach ($todo as $classes_hash => $tests_hash) {
     }
 
     // Checkout the appropriate versions to use for testing
-    list($return_code, $_) = exec_out("git --work-tree=../classes --git-dir=../classes/.git checkout -q $classes_hash");
+    chdir('../classes');
+    list($return_code, $_) = exec_out("git checkout -q $classes_hash");
     if ($_) {
         echo "[ERROR] Error checking out classes sha1 " . $classes_hash ."\n";
         continue;
     }
 
+    chdir('../tests');
     list($return_code, $_) = exec_out("git checkout -q $tests_hash");
     if ($_) {
         echo "[ERROR] Error checking out tests sha1 " . $classes_hash ."\n";
@@ -108,15 +113,20 @@ foreach ($todo as $classes_hash => $tests_hash) {
     $json = pretty_json_encode((object) $todo);
     file_put_contents('../tests-results/todo.json', $json);
 
-    `git --work-tree=../tests-results --git-dir=../tests-results/.git commit -q -a -m "Added results for $classes_hash"`;
+    chdir('../tests-results');
+    `git add index.json todo.json results/$classes_hash.json`;
+    `git commit -q -m "Added results for flourishlib/flourish-classes@$classes_hash"`;
+    chdir('../tests');
 }
 
-`git --work-tree=../tests-results --git-dir=../tests-results/.git push -q origin master`;
-
-chdir('../build');
+chdir('../tests-results');
+`git push -q origin master`;
 
 // Return to the original location
-`git --work-tree=../classes --git-dir=../classes/.git checkout -q $classes_branch`;
-`git --work-tree=../tests --git-dir=../tests/.git checkout -q $tests_branch`;
+chdir('../classes');
+`git checkout -q $classes_branch`;
+chdir('../tests');
+`git checkout -q $tests_branch`;
 
+chdir('../build');
 unlink($pid_file);
