@@ -10,6 +10,7 @@ chdir(dirname(__FILE__));
 touch($pid_file);
 
 $hosts = array(
+    'will@vm-arch.wbond.net',
     'will@vm-centos.wbond.net',
     'will@vm-debian.wbond.net',
     'will@vm-fedora.wbond.net',
